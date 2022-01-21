@@ -76,7 +76,7 @@ private func initKeyCommands() {
 ( Esc, Delete, F1~F12, 상하좌우 방향키, Home, End, PageUp, PageDown 키)
 
 <aside>
-💡 엔터는 "\r”를 입력해야 HUD에 return sf symbol이 뜬다. 탭은 "\t”
+💡 엔터는 "\n”를 입력해야 HUD에 return sf symbol이 뜬다. 탭은 "\t”
 
 </aside>
 
