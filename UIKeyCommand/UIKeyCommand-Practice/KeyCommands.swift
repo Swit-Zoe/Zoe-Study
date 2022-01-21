@@ -180,7 +180,7 @@ enum KeyCommands: String, CaseIterable {
                                 attributes: [], state: .on)
         case .newLine:
             return UIKeyCommand(title: self.rawValue, action: #selector(KeyCommandActionProtocol.pressNewLine),
-                                input: "\r",
+                                input: "\n",
                                 modifierFlags: .shift,
                                 propertyList: [], alternates: [],
                                 discoverabilityTitle: "새 줄 추가",
