@@ -8,6 +8,11 @@
 import Foundation
 import UIKit
 
+@objc protocol KeyCommandActionProtocol {
+    @objc func pressEnter()
+    @objc func pressNewLine()
+}
+
 enum KeyCommands: String, CaseIterable {
     
     case reactLastMessage = "reactLastMessage"
@@ -167,14 +172,14 @@ enum KeyCommands: String, CaseIterable {
         case .confirm:
             return UIKeyCommand(title: self.rawValue,
                                 image: UIImage(systemName: "return"),
-                                action: #selector(ViewController.dummySelector),
+                                action: #selector(KeyCommandActionProtocol.pressEnter),
                                 input: "\r",
                                 modifierFlags: [],
                                 propertyList: [], alternates: [],
                                 discoverabilityTitle: "선택 수락 / 제출 입력",
                                 attributes: [], state: .on)
         case .newLine:
-            return UIKeyCommand(title: self.rawValue, action: #selector(ViewController.dummySelector),
+            return UIKeyCommand(title: self.rawValue, action: #selector(KeyCommandActionProtocol.pressNewLine),
                                 input: "\r",
                                 modifierFlags: .shift,
                                 propertyList: [], alternates: [],

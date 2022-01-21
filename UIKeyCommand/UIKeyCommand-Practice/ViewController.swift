@@ -18,7 +18,7 @@ class ViewController: UIViewController {
     // MARK: @IBOutlet Properties
     
     @IBOutlet weak var testLabel: UILabel!
-    @IBOutlet weak var textField: UITextField!
+    @IBOutlet weak var textView: UITextView!
     
     
     // MARK: - View Life Cycle
@@ -26,6 +26,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        initUI()
         initFirstResponder()
         initKeyCommands()
         assignDelegation()
@@ -34,8 +35,12 @@ class ViewController: UIViewController {
     // MARK: - Functions
     
     // init functions
+    private func initUI() {
+        testLabel.numberOfLines = 0
+    }
+    
     private func initFirstResponder() {
-        textField.becomeFirstResponder()
+        textView.becomeFirstResponder()
     }
     
     private func initKeyCommands() {
@@ -45,27 +50,26 @@ class ViewController: UIViewController {
     }
     
     func assignDelegation() {
-        textField.delegate = self
+        // textView.delegate = self
     }
-
+    
     // action functions
-    @objc func inputESC() {
-        testLabel.text = "ESC key clicked."
-    }
-    
-    @objc func inputESC2() {
-        testLabel.text = "ESC2 key clicked."
-    }
-    
     @objc func dummySelector() {
         print("Pressed")
     }
 
 }
 
-extension ViewController: UITextFieldDelegate {
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        testLabel.text = textField.text
-        return true
+// MARK: - KeyCommandActionProtocol
+
+extension ViewController: KeyCommandActionProtocol {
+    func pressEnter() {
+        testLabel.text = textView.text
+        textView.text = ""
     }
+    
+    func pressNewLine() {
+        textView.insertText("\n")
+    }
+    
 }
