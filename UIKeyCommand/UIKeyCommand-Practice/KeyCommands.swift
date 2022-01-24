@@ -42,6 +42,7 @@ enum KeyCommands: String, CaseIterable {
     case strike = "strike"
     
     var command: UIKeyCommand {
+        
         switch self {
         case .reactLastMessage:
             return UIKeyCommand(title: self.rawValue, action: #selector(ViewController.dummySelector),
@@ -170,21 +171,36 @@ enum KeyCommands: String, CaseIterable {
                                 discoverabilityTitle: "상태 편집 보기 표시",
                                 attributes: [], state: .on)
         case .confirm:
-            return UIKeyCommand(title: self.rawValue,
-                                image: UIImage(systemName: "return"),
-                                action: #selector(KeyCommandActionProtocol.pressEnter),
-                                input: "\r",
-                                modifierFlags: [],
-                                propertyList: [], alternates: [],
-                                discoverabilityTitle: "선택 수락 / 제출 입력",
-                                attributes: [], state: .on)
+            let command = UIKeyCommand(title: self.rawValue,
+                                       image: UIImage(systemName: "return"),
+                                       action: #selector(KeyCommandActionProtocol.pressEnter),
+                                       input: "\r",
+                                       modifierFlags: [],
+                                       propertyList: [], alternates: [],
+                                       discoverabilityTitle: "선택 수락 / 제출 입력",
+                                       attributes: [], state: .on)
+            if #available(iOS 15.0, *) {
+                command.wantsPriorityOverSystemBehavior = true
+            } else {
+                // Fallback on earlier versions
+            }
+            
+            return command
+            
         case .newLine:
-            return UIKeyCommand(title: self.rawValue, action: #selector(KeyCommandActionProtocol.pressNewLine),
-                                input: "\n",
-                                modifierFlags: .shift,
-                                propertyList: [], alternates: [],
-                                discoverabilityTitle: "새 줄 추가",
-                                attributes: [], state: .on)
+            let command = UIKeyCommand(title: self.rawValue, action: #selector(KeyCommandActionProtocol.pressNewLine),
+                                       input: "\r",
+                                       modifierFlags: .shift,
+                                       propertyList: [], alternates: [],
+                                       discoverabilityTitle: "새 줄 추가",
+                                       attributes: [], state: .on)
+            if #available(iOS 15.0, *) {
+                command.wantsPriorityOverSystemBehavior = true
+            } else {
+                // Fallback on earlier versions
+            }
+            
+            return command
         case .tabRight:
             return UIKeyCommand(title: self.rawValue, action: #selector(ViewController.dummySelector),
                                 input: "\t",

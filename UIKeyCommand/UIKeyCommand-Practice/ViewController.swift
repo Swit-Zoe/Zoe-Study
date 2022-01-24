@@ -30,6 +30,7 @@ class ViewController: UIViewController {
         initFirstResponder()
         initKeyCommands()
         assignDelegation()
+        
     }
     
     // MARK: - Functions
@@ -66,10 +67,12 @@ extension ViewController: KeyCommandActionProtocol {
     func pressEnter() {
         testLabel.text = textView.text
         textView.text = ""
+        print("Enter Pressed")
     }
     
     func pressNewLine() {
         textView.insertText("\n")
+        print("New Line")
     }
     
 }
