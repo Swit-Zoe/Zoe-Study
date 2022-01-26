@@ -6,113 +6,66 @@ Created: January 21, 2022 1:21 PM
 
 [Ordered Collection Diffing](https://thoughtbot.com/blog/ordered-collection-diffing?utm_campaign=iOS%2BDev%2BWeekly&utm_source=iOS%2BDev%2BWeekly%2BIssue%2B405)
 
-## 라이브러리 종류
+## 라이브러리 종류 및 비교
 
-- [Differ](https://github.com/tonyarnold/Differ) (by [@tonyarnold](https://github.com/tonyarnold))
-- [DifferenceKit](https://github.com/ra1028/DifferenceKit) (by [@ra1028](https://github.com/ra1028/))
-- [RxDataSources](https://github.com/RxSwiftCommunity/RxDataSources) (by [@kzaher](https://github.com/kzaher), [RxSwift Community](https://github.com/RxSwiftCommunity))
-- [IGListKit](https://github.com/Instagram/IGListKit) (by [Instagram](https://github.com/Instagram))
-- [FlexibleDiff](https://github.com/RACCommunity/FlexibleDiff) (by [@andersio](https://github.com/andersio), [RACCommunity](https://github.com/RACCommunity))
-- [DeepDiff](https://github.com/onmyway133/DeepDiff) (by [@onmyway133](https://github.com/onmyway133))
-- [Dwifft](https://github.com/jflinter/Dwifft) (by [@jflinter](https://github.com/jflinter))
-- [Changeset](https://github.com/osteslag/Changeset) (by [@osteslag](https://github.com/osteslag))
+[Diff-Libraries.md](https://github.com/Swit-Zoe/Zoe-Study/blob/main/Diff/Diff-Libraries.md)
 
-## 라이브러리 비교
+## 연습 프로젝트 설명 - table view
 
-### 속도, 시간복잡도
+`diff = old.extendedDiff(new)` 로 ExtendedDiff를 만들어준 후 출력해보면
 
-실제 속도 측정 테이블 (2022.01.21)
+```
+ExtendedDiff(source: Differ.Diff(
+elements: [I(1), I(3), I(5), I(6), D(4), D(5), D(6), D(7), D(8), D(9), D(10), I(8), I(9), I(10)]), 
+sourceIndex: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 
+reorderedIndex: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 
+elements: [I(1), I(3), I(5), I(6), D(4), D(5), D(6), D(7), D(8), D(9), D(10), I(8), I(9), I(10)], 
+moveIndices: Set([]))
+```
 
-![Untitled](https://user-images.githubusercontent.com/97005335/150482974-45d55a10-b7d4-4be3-aff1-29595964090c.png)
+가 출력되는데, 여기서 elements가 
 
-| 라이브러리 종류                   | 등수  | 점수  | (+ 시간복잡도) |
-| -------------------------- | --- | --- | --------- |
-| DifferenceKit              | 1   | 8   | O(N)      |
-| RxDataSources              | 2   | 7   | O(N)      |
-| Differ                     | 4   | 5   | O(NM)     |
-| IGListKit                  | 3   | 6   | O(N)      |
-| FlexibleDiff               | 5   | 4   | O(N)      |
-| DeepDiff                   | 7   | 2   | O(N)      |
-| Dwifft                     | 8   | 1   | O(NM)     |
-| Swift.CollectionDifference | 6   | 3   | O(NM)     |
+`I(1), I(3), I(5), I(6), D(4), D(5), D(6), D(7), D(8), D(9), D(10), I(8), I(9), I(10)`
 
-### 지원되는 Collection 유형
+이런 식이다. 라이브러리의 Elements는 Enum으로 만들어져 있는데, 아래와 같다.
 
-| 라이브러리 종류                   | 1차원 collection | 2차원 collection(Sectioned) | element/section 복제 | 점수  |
-| -------------------------- | -------------- | ------------------------- | ------------------ | --- |
-| DifferenceKit              | O              | O                         | O                  | 3   |
-| RxDataSources              | X              | O                         | X                  | 1   |
-| Differ                     | O              | O                         | O                  | 3   |
-| IGListKit                  | O              | X                         | O                  | 2   |
-| FlexibleDiff               | O              | O                         | O                  | 3   |
-| DeepDiff                   | O              | X                         | O                  | 2   |
-| Dwifft                     | O              | O                         | O                  | 3   |
-| Swift.CollectionDifference | O              | X                         | O                  | 2   |
+```swift
+public enum Element {
+    case insert(at: Int)
+    case delete(at: Int)
+    case move(from: Int, to: Int)
+}
+```
 
-### 지원되는 Element Diff 동작들
+즉, 위의 I(1) 은 index 1번에 insert 라는 뜻이다.
 
-| 라이브러리 종류                   | Delete | Insert | Move | Reload | Section간 Move | 점수  |
-| -------------------------- | ------ | ------ | ---- | ------ | ------------- | --- |
-| DifferenceKit              | O      | O      | O    | O      | O             | 5   |
-| RxDataSources              | O      | O      | O    | O      | O             | 5   |
-| Differ                     | O      | O      | O    | X      | X             | 3   |
-| IGListKit                  | O      | O      | O    | O      | X             | 4   |
-| FlexibleDiff               | O      | O      | O    | O      | X             | 4   |
-| DeepDiff                   | O      | O      | O    | O      | X             | 4   |
-| Dwifft                     | O      | O      | X    | X      | X             | 2   |
-| Swift.CollectionDifference | O      | O      | O    | X      | X             | 2   |
+---
 
-### Section Diff 지원 여부
+![image](https://user-images.githubusercontent.com/97005335/151126792-fab22a46-c0ae-4e5c-834a-e27484d4e2cf.png)
 
-| 라이브러리 종류                   | Delete | Insert | Move | Reload | 점수  |
-| -------------------------- | ------ | ------ | ---- | ------ | --- |
-| DifferenceKit              | O      | O      | O    | O      | 4   |
-| RxDataSources              | O      | O      | O    | X      | 3   |
-| Differ                     | O      | O      | O    | X ?    | 3   |
-| IGListKit                  | X      | X      | X    | X      | 0   |
-| FlexibleDiff               | O      | O      | O    | O      | 4   |
-| DeepDiff                   | X      | X      | X    | X      | 0   |
-| Dwifft                     | O      | O      | X    | X      | 2   |
-| Swift.CollectionDifference | X      | X      | X    | X      | 0   |
+테스트 데이터를 보면 1, 3, 5, 6, 8, 9, 10 번째 index의 cell data가 수정된 것을 볼 수 있다.
 
-### repository star 개수
+Diff는 old row : new row = 1:1 매칭이 아닌,  
+기존과 같은 data는 그대로 놔두고  필요한 cell들은 사이사이 insert, 필요 없어진 cell들은 delete한다.
 
-| 라이브러리 종류                   | star 수 | 등수  | 점수  |
-| -------------------------- | ------ | --- | --- |
-| DifferenceKit              | 3K     | 2   | 7   |
-| RxDataSources              | 2.8K   | 3   | 6   |
-| Differ                     | 601    | 6   | 3   |
-| IGListKit                  | 12.2K  | 1   | 8   |
-| FlexibleDiff               | 104    | 7   | 2   |
-| DeepDiff                   | 2K     | 4   | 5   |
-| Dwifft                     | 1.8K   | 5   | 4   |
-| Swift.CollectionDifference |        |     |     |
+그러나 우리가 필요한 건 각 row 내 data가 업데이트 된 cell의 목록이므로,
 
-### 점수 총합
+```swift
+print("updated된 cell들 전체 출력")
+diff.elements.forEach { element in
+    if case let .insert(at) = element {
+        print(at)
+        self.testTableView.selectRow(at: IndexPath(row: at, section: 0), animated: true, scrollPosition: .top)
+    }
+}
+print("--------------------")
+```
 
-| 라이브러리 종류                   | star 제외 점수 | star 포함 점수 | 등수  |
-| -------------------------- | ---------- | ---------- | --- |
-| DifferenceKit              | 20         | 27         | 1   |
-| RxDataSources              | 16         | 22         | 2   |
-| Differ                     | 14         | 17         | 4   |
-| IGListKit                  | 12         | 20         | 3   |
-| FlexibleDiff               | 15         | 17         | 4   |
-| DeepDiff                   | 8          | 13         | 6   |
-| Dwifft                     | 8          | 12         | 7   |
-| Swift.CollectionDifference | 7          | -          |     |
+diff의 elements들 중에서 case가 insert에 해당하는 element들의 연관값만을 뽑아 사용한다.
 
-## 연습 프로젝트
+## 연습 프로젝트 시연
 
-- 사용해볼 라이브러리
-  - DifferenceKit (사유 : 등수 1등)
-  - RxDataSources (사유 : 등수 2등)
-  - IGListKit (사유 : star수 1등)
-  - Differ (사유 : Harold)
-- 시나리오
-  - 몇 개의 task만 다른 json 파일 두 개,  
-    fetch()로 업데이트 후 differ 써서 다른 object들 고르고, diff찾아서 alert 띄우기
-- 
+![image](https://user-images.githubusercontent.com/97005335/151128583-85a9000a-e59b-4079-b5bd-09e5837ca459.png) 버튼으로 데이터를 toggle하고,
+![image](https://user-images.githubusercontent.com/97005335/151128600-7736a760-4ee2-489e-85d1-5551d86c46c8.png) 버튼으로 변경된 데이터를 multi-select한다.
 
-(보류)
-
-## iOS13 부터 사용가능한 Swift 제공 Diffing
+<img src ="https://user-images.githubusercontent.com/97005335/151128402-83261587-e214-41be-8377-d99e99fbf789.gif" width=300 >
