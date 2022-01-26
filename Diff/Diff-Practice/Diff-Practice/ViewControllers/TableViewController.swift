@@ -7,38 +7,37 @@
 
 import UIKit
 import Differ
-import IGListKit
 
 class TableViewController: UIViewController {
     
     // MARK: - Properties
     
     var dummyData1: [DummyModel] = [
-        DummyModel(primaryKey: 0, message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
-        DummyModel(primaryKey: 1, message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
-        DummyModel(primaryKey: 2, message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
-        DummyModel(primaryKey: 3, message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
-        DummyModel(primaryKey: 4, message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
-        DummyModel(primaryKey: 5, message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
-        DummyModel(primaryKey: 6, message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
-        DummyModel(primaryKey: 7,message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
-        DummyModel(primaryKey: 8, message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
-        DummyModel(primaryKey: 9, message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
-        DummyModel(primaryKey: 10, message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
+        DummyModel(message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
+        DummyModel(message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
+        DummyModel(message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
+        DummyModel(message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
+        DummyModel(message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
+        DummyModel(message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
+        DummyModel(message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
+        DummyModel(message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
+        DummyModel(message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
+        DummyModel(message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
+        DummyModel(message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
     ]
     
     var dummyData2: [DummyModel] = [
-        DummyModel(primaryKey: 0,message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
-        DummyModel(primaryKey: 1,message: "메세지 수정시 이렇게", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
-        DummyModel(primaryKey: 2, message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
-        DummyModel(primaryKey: 3, message: "리액션 갯수 수정", reaction: ["1","2","3"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
-        DummyModel(primaryKey: 4, message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
-        DummyModel(primaryKey: 5, message: "리액션 내용 수정", reaction: ["1","2","3","5"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
-        DummyModel(primaryKey: 6, message: "파일 하나 삭제", reaction: ["1","2","3","4"], files: ["a.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
-        DummyModel(primaryKey: 7, message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
-        DummyModel(primaryKey: 8, message: "파일 전체 삭제", reaction: ["1","2","3","4"], files: [], comments: ["안녕", "ㅎㅇㅎㅇ"]),
-        DummyModel(primaryKey: 9, message: "코멘트 추가", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ", "ㅇㅇ"]),
-        DummyModel(primaryKey: 10, message: "코멘트 전체 삭제", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: []),
+        DummyModel(message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
+        DummyModel(message: "메세지 수정시 이렇게", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
+        DummyModel(message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
+        DummyModel(message: "리액션 갯수 수정", reaction: ["1","2","3"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
+        DummyModel(message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
+        DummyModel(message: "리액션 내용 수정", reaction: ["1","2","3","5"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
+        DummyModel(message: "파일 하나 삭제", reaction: ["1","2","3","4"], files: ["a.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
+        DummyModel(message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
+        DummyModel(message: "파일 전체 삭제", reaction: ["1","2","3","4"], files: [], comments: ["안녕", "ㅎㅇㅎㅇ"]),
+        DummyModel(message: "코멘트 추가", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ", "ㅇㅇ"]),
+        DummyModel(message: "코멘트 전체 삭제", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: []),
     ]
     
     let refreshControl = UIRefreshControl()
@@ -104,8 +103,10 @@ class TableViewController: UIViewController {
             return
         }
         
+        print(diff)
+        
         print("updated된 cell들 전체 출력")
-        diff.forEach { element in
+        diff.elements.forEach { element in
             if case let .insert(at) = element {
                 print(at)
                 self.testTableView.selectRow(at: IndexPath(row: at, section: 0), animated: true, scrollPosition: .top)

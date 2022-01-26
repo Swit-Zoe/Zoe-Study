@@ -6,8 +6,6 @@ target 'Diff-Practice' do
   use_frameworks!
 
   # Pods for Diff-Practice
-	pod 'DifferenceKit'
 	pod 'Differ'
-	pod 'IGListKit', '~> 4.0.0'
 
 end
