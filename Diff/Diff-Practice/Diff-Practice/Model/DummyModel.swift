@@ -14,7 +14,7 @@ struct DummyModel: Equatable {
         var result: Bool = false
         
         if lhs.message == rhs.message,
-           lhs.comments == rhs.comments,
+           lhs.reaction == rhs.reaction,
            lhs.files == rhs.files,
            lhs.comments == rhs.comments {
             result = true
