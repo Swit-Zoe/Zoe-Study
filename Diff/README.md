@@ -81,7 +81,7 @@ diff의 elements들 중에서 case가 insert에 해당하는 element들의 연�
 // data 변경하고 cell 조정
 func useDiffer(old: [DummyModel], new: [DummyModel]){
     diff = old.extendedDiff(new)
-        
+
     // performWithoutAnimation을 사용해 animation 없이 cell 조정
     UIView.performWithoutAnimation {
     testTableView.animateRowChanges(oldData: old,
@@ -108,11 +108,11 @@ element의 insert, delete를 그대로 실행해주는 모습이다.
 // MARK: animation 없이 cell 조정 - dynamic height 면 애니메이션 발생. 어차피 performWithoutAnimation 써야 함
 func reconfigureTableViewCells(old: [DummyModel], new: [DummyModel]) {
     diff = old.extendedDiff(new)
-        
+
     guard let diff = diff else {
         return
     }
-        
+
     diff.elements.forEach { Element in
         if case let .insert(at) = Element {
             UIView.performWithoutAnimation {
@@ -140,3 +140,9 @@ reconfigure 하는 동작에 의해 높이나 레이아웃 등이 바뀔 땐, �
 ![image](https://user-images.githubusercontent.com/97005335/151128600-7736a760-4ee2-489e-85d1-5551d86c46c8.png) 버튼으로 변경된 데이터를 multi-select한다.
 
 <img src ="https://user-images.githubusercontent.com/97005335/151128402-83261587-e214-41be-8377-d99e99fbf789.gif" width=300 >
+
+
+
+### 애니메이션 삭제 후
+
+<img src ="https://user-images.githubusercontent.com/97005335/151312769-f4378310-78b0-4d2f-a346-6d84bccd9f86.gif" width=400>
