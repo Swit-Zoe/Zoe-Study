@@ -87,6 +87,12 @@ class TableViewController: UIViewController {
     
     @objc func toggle() {
         toggleFlag.toggle()
+        
+        // toggle할 때 선택된 cell들 모두 선택해제
+        testTableView.indexPathsForSelectedRows?.forEach({ indexPath in
+            testTableView.deselectRow(at: indexPath, animated: false)
+        })
+        
         if toggleFlag {
             data = dummyData2
             
