@@ -1,6 +1,16 @@
 # Diff
 
-Created: January 21, 2022 1:21 PM
+### Table of Contents
+
+[Diff가 뭔지](#Diff가-뭔지)
+
+[라이브러리 종류 및 비교](#라이브러리-종류-및-비교)
+
+[연습 프로젝트 설명 - table view](##연습-프로젝트-설명---table-view)
+
+[애니메이션 제거](#애니메이션-제거)
+
+[연습 프로젝트 시연](#연습-프로젝트-시연)
 
 ## Diff가 뭔지
 
@@ -62,6 +72,67 @@ print("--------------------")
 ```
 
 diff의 elements들 중에서 case가 insert에 해당하는 element들의 연관값만을 뽑아 사용한다.
+
+## 애니메이션 제거
+
+### 방법 1. Differ의 animateRowChanges 함수 사용하기
+
+```swift
+// data 변경하고 cell 조정
+func useDiffer(old: [DummyModel], new: [DummyModel]){
+    diff = old.extendedDiff(new)
+        
+    // performWithoutAnimation을 사용해 animation 없이 cell 조정
+    UIView.performWithoutAnimation {
+    testTableView.animateRowChanges(oldData: old,
+                                        newData: new,
+                                        deletionAnimation: .none,
+                                        insertionAnimation: .none)
+    }
+}
+```
+
+간단하게 `animateRowChanges`함수 호출부를 
+UIView `performWithoutAnimation` 의 클로저 부분에 넣어주면 된다.
+
+그러나, Differ의 `animateRowChanges`의 구현부를 살펴보면
+![image](https://user-images.githubusercontent.com/97005335/151310221-decb47c6-7920-48a3-b6b6-8fa06d7193e8.png)
+
+element의 insert, delete를 그대로 실행해주는 모습이다.  
+해당 cell을 새로 그려서 insert하고, 필요없어진 cell을 지우는데,  
+구현 의도와는 달리 불필요하게 cell을 그리게 되어 다른 방법을 찾아봤다.
+
+### 방법 2. UITableView의 reconfigureRows 함수 사용하기
+
+```swift
+// MARK: animation 없이 cell 조정 - dynamic height 면 애니메이션 발생. 어차피 performWithoutAnimation 써야 함
+func reconfigureTableViewCells(old: [DummyModel], new: [DummyModel]) {
+    diff = old.extendedDiff(new)
+        
+    guard let diff = diff else {
+        return
+    }
+        
+    diff.elements.forEach { Element in
+        if case let .insert(at) = Element {
+            UIView.performWithoutAnimation {
+                testTableView.reconfigureRows(at: [IndexPath(row: at, section: 0)])
+            }
+        }
+        if case let .delete(at) = Element {
+            UIView.performWithoutAnimation {
+            testTableView.reconfigureRows(at: [IndexPath(row: at, section: 0)])
+            }
+        }
+    }
+}
+```
+
+`reconfigureRows` 를 사용하면 cell을 reload하지 않아 리소스를 아낄 수 있다.  
+대신, 해당 indexpath에 같은 cell을 dequeue해야 한다. (`prepareForReuse()` 를 호출하지 않음)
+
+reconfigure 하는 동작에 의해 높이나 레이아웃 등이 바뀔 땐, 애니메이션이 들어가서  
+여기도 어차피 `UIView.performWithoutAnimation` 를 사용해줘야 한다.
 
 ## 연습 프로젝트 시연
 
