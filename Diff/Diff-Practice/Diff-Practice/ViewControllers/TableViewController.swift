@@ -32,7 +32,7 @@ class TableViewController: UIViewController {
         DummyModel(message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
         DummyModel(message: "리액션 갯수 수정", reaction: ["1","2","3"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
         DummyModel(message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
-        DummyModel(message: "리액션 내용 수정", reaction: ["1","2","3","5"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
+        DummyModel(message: "리액션 내용 수정\n두줄이면?", reaction: ["1","2","3","5"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
         DummyModel(message: "파일 하나 삭제", reaction: ["1","2","3","4"], files: ["a.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
         DummyModel(message: "기본 셀", reaction: ["1","2","3","4"], files: ["a.png", "ab.png", "a.docs"], comments: ["안녕", "ㅎㅇㅎㅇ"]),
         DummyModel(message: "파일 전체 삭제", reaction: ["1","2","3","4"], files: [], comments: ["안녕", "ㅎㅇㅎㅇ"]),
@@ -89,10 +89,14 @@ class TableViewController: UIViewController {
         toggleFlag.toggle()
         if toggleFlag {
             data = dummyData2
+            
+            // MARK: 데이터 업데이트 함수 둘 중 택1 - useDiffer
             useDiffer(old: dummyData1, new: dummyData2)
         } else {
             data = dummyData1
-            useDiffer(old: dummyData2, new: dummyData1)
+            
+            // MARK: 데이터 업데이트 함수 둘 중 택1 - useDiffer
+            reconfigureTableViewCells(old: dummyData2, new: dummyData1)
         }
     }
     
@@ -118,10 +122,36 @@ class TableViewController: UIViewController {
     // data 변경하고 cell 조정
     func useDiffer(old: [DummyModel], new: [DummyModel]){
         diff = old.extendedDiff(new)
-        testTableView.animateRowChanges(oldData: old,
-                                        newData: new,
-                                        deletionAnimation: .right,
-                                        insertionAnimation: .left)
+        
+        // performWithoutAnimation을 사용해 animation 없이 cell 조정
+        UIView.performWithoutAnimation {
+            testTableView.animateRowChanges(oldData: old,
+                                            newData: new,
+                                            deletionAnimation: .none,
+                                            insertionAnimation: .none)
+        }
+    }
+    
+    // MARK: animation 없이 cell 조정 - dynamic height 면 애니메이션 발생. 어차피 performWithoutAnimation 써야 함
+    func reconfigureTableViewCells(old: [DummyModel], new: [DummyModel]) {
+        diff = old.extendedDiff(new)
+        
+        guard let diff = diff else {
+            return
+        }
+        
+        diff.elements.forEach { Element in
+            if case let .insert(at) = Element {
+                UIView.performWithoutAnimation {
+                    testTableView.reconfigureRows(at: [IndexPath(row: at, section: 0)])
+                }
+            }
+            if case let .delete(at) = Element {
+                UIView.performWithoutAnimation {
+                    testTableView.reconfigureRows(at: [IndexPath(row: at, section: 0)])
+                }
+            }
+        }
     }
     
 }
