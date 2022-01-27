@@ -102,7 +102,7 @@ element의 insert, delete를 그대로 실행해주는 모습이다.
 해당 cell을 새로 그려서 insert하고, 필요없어진 cell을 지우는데,  
 구현 의도와는 달리 불필요하게 cell을 그리게 되어 다른 방법을 찾아봤다.
 
-### 방법 2. UITableView의 reconfigureRows 함수 사용하기
+### ~~방법 2. UITableView의 reconfigureRows 함수 사용하기~~
 
 ```swift
 // MARK: animation 없이 cell 조정 - dynamic height 면 애니메이션 발생. 어차피 performWithoutAnimation 써야 함
@@ -128,11 +128,97 @@ func reconfigureTableViewCells(old: [DummyModel], new: [DummyModel]) {
 }
 ```
 
-`reconfigureRows` 를 사용하면 cell을 reload하지 않아 리소스를 아낄 수 있다.  
-대신, 해당 indexpath에 같은 cell을 dequeue해야 한다. (`prepareForReuse()` 를 호출하지 않음)
+~~`reconfigureRows` 를 사용하면 cell을 reload하지 않아 리소스를 아낄 수 있다.  
+대신, 해당 indexpath에 같은 cell을 dequeue해야 한다. (`prepareForReuse()` 를 호출하지 않음)~~
 
-reconfigure 하는 동작에 의해 높이나 레이아웃 등이 바뀔 땐, 애니메이션이 들어가서  
-여기도 어차피 `UIView.performWithoutAnimation` 를 사용해줘야 한다.
+~~reconfigure 하는 동작에 의해 높이나 레이아웃 등이 바뀔 땐, 애니메이션이 들어가서  
+여기도 어차피 `UIView.performWithoutAnimation` 를 사용해줘야 한다.~~
+
+### 방법 3. performBatchUpdates 내부에서 cell data값만 새로 셋팅하기
+
+```swift
+// MARK: animation 없이 cell 조정 - dynamic height 면 애니메이션 발생. 어차피 performWithoutAnimation 써야 함
+func reconfigureTableViewCells(old: [DummyModel], new: [DummyModel]) {
+    diff = old.extendedDiff(new)
+        
+    guard let diff = diff else {
+        return
+    }
+        
+    diff.elements.forEach { Element in
+        if case let .insert(at) = Element {
+            UIView.performWithoutAnimation {
+                testTableView.performBatchUpdates({
+                    if let cell = testTableView.cellForRow(at: IndexPath(row: at, section: 0)) as? TestTableViewCell {
+                        cell.setCell(data: data[at])
+                    }
+                }, completion: nil)
+            }
+        }
+        if case let .delete(at) = Element {
+            UIView.performWithoutAnimation {
+                testTableView.performBatchUpdates({
+                    if let cell = testTableView.cellForRow(at: IndexPath(row: at, section: 0)) as? TestTableViewCell {
+                        cell.setCell(data: data[at])
+                    }
+                }, completion: nil)
+            }
+        }
+    }
+}
+```
+
+cell을 다시 그리지 않고, 데이터만 바꾼 후 layout 관련 사항은  
+`performBatchUpdates`( iOS 11.0+) 로 감싸 `heightForRowAtindexPath` 이 호출되게 유도한다.
+
+insert 시에는 height 관련 애니메이션이 발생하지 않으나, delete에 발생해 둘 다 `performWithoutAnimation` 로 감싸줬다.
+
+### 개선사항?
+
+diff log를 찍어보면
+
+**[D(1), D(3), D(5), D(6), D(8), D(9), D(10), I(4), I(5), I(6), I(7), I(8), I(9), I(10)]**
+
+이렇게 나오는데, 중복되는 index가 몇 개 있다.  
+어차피 연관값으로 사용되는 부분이니 겹치는 숫자를 제거하고 
+`performBatchUpdates` 안에서 한 번에 update를 수행해도 될 것 같다.  
+(생성, 삭제를 고려하지 않을 때, 겹치는 숫자의 개수는 
+old - new 데이터 사이 수정되지 않은 cell의 index가 어디있냐에 따라 달라지기 때문에
+때에 따라 효율적이지 않을 수 있을 것 같다.)
+( 그렇다고 `performBatchUpdates` 를 매 업데이트마다 호출하는건 효율적인가?.....🤔)
+
+```swift
+func updateCellsAtOnce(old: [DummyModel], new: [DummyModel]) {
+    diff = old.extendedDiff(new)
+        
+    guard let diff = diff else {
+        return
+    }
+        
+    var indexPaths: [IndexPath] = []
+        
+    diff.elements.forEach { element in
+        if case let .insert(at) = element {
+            indexPaths.append(IndexPath(row: at, section: 0))
+        } else if case let .delete(at) = element {
+            indexPaths.append(IndexPath(row: at, section: 0))
+        }
+    }
+    indexPaths = Array(Set(indexPaths))
+        
+    UIView.performWithoutAnimation {
+        testTableView.performBatchUpdates({
+                
+            indexPaths.forEach { indexPath in
+                if let cell = testTableView.cellForRow(at: indexPath) as? TestTableViewCell {
+                    cell.setCell(data: data[indexPath.row])
+                }
+            }
+                
+        }, completion: nil)
+    }
+}
+```
 
 ## 연습 프로젝트 시연
 
@@ -140,8 +226,6 @@ reconfigure 하는 동작에 의해 높이나 레이아웃 등이 바뀔 땐, �
 ![image](https://user-images.githubusercontent.com/97005335/151128600-7736a760-4ee2-489e-85d1-5551d86c46c8.png) 버튼으로 변경된 데이터를 multi-select한다.
 
 <img src ="https://user-images.githubusercontent.com/97005335/151128402-83261587-e214-41be-8377-d99e99fbf789.gif" width=300 >
-
-
 
 ### 애니메이션 삭제 후
 

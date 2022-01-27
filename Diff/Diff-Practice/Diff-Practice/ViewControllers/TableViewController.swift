@@ -101,8 +101,9 @@ class TableViewController: UIViewController {
         } else {
             data = dummyData1
             
-            // MARK: 데이터 업데이트 함수 둘 중 택1 - useDiffer
-            reconfigureTableViewCells(old: dummyData2, new: dummyData1)
+            // MARK: 데이터 업데이트 함수 둘 중 택1 - updateCellsAtOnce
+            // reconfigureTableViewCells(old: dummyData2, new: dummyData1)
+            updateCellsAtOnce(old: dummyData2, new: dummyData1)
         }
     }
     
@@ -146,17 +147,56 @@ class TableViewController: UIViewController {
             return
         }
         
-        diff.elements.forEach { Element in
-            if case let .insert(at) = Element {
+        diff.elements.forEach { element in
+            if case let .insert(at) = element {
                 UIView.performWithoutAnimation {
-                    testTableView.reconfigureRows(at: [IndexPath(row: at, section: 0)])
+                    testTableView.performBatchUpdates({
+                        if let cell = testTableView.cellForRow(at: IndexPath(row: at, section: 0)) as? TestTableViewCell {
+                            cell.setCell(data: data[at])
+                        }
+                    }, completion: nil)
                 }
             }
-            if case let .delete(at) = Element {
+            if case let .delete(at) = element {
                 UIView.performWithoutAnimation {
-                    testTableView.reconfigureRows(at: [IndexPath(row: at, section: 0)])
+                    testTableView.performBatchUpdates({
+                        if let cell = testTableView.cellForRow(at: IndexPath(row: at, section: 0)) as? TestTableViewCell {
+                            cell.setCell(data: data[at])
+                        }
+                    }, completion: nil)
                 }
             }
+        }
+    }
+    
+    func updateCellsAtOnce(old: [DummyModel], new: [DummyModel]) {
+        diff = old.extendedDiff(new)
+        
+        guard let diff = diff else {
+            return
+        }
+        
+        var indexPaths: [IndexPath] = []
+        
+        diff.elements.forEach { element in
+            if case let .insert(at) = element {
+                indexPaths.append(IndexPath(row: at, section: 0))
+            } else if case let .delete(at) = element {
+                indexPaths.append(IndexPath(row: at, section: 0))
+            }
+        }
+        indexPaths = Array(Set(indexPaths))
+        
+        UIView.performWithoutAnimation {
+            testTableView.performBatchUpdates({
+                
+                indexPaths.forEach { indexPath in
+                    if let cell = testTableView.cellForRow(at: indexPath) as? TestTableViewCell {
+                        cell.setCell(data: data[indexPath.row])
+                    }
+                }
+                
+            }, completion: nil)
         }
     }
     
